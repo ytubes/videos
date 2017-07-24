@@ -1,0 +1,16 @@
+{
+    "name": "ytubes/videosn",
+    "description": "Видео модуль",
+    "require": {
+        "php": "^5.6 || ^7.0",
+        "yiisoft/yii2": "~2.0.9",
+        "yiisoft/yii2-jui": "~2.0.0",
+        "ytubes/core": ">=0.0.1",
+        "jbroadway/urlify": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "ytubes\\videos\\": ""
+        }
+    }
+}
