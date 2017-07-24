@@ -1,5 +1,5 @@
 {
-    "name": "ytubes/videosn",
+    "name": "ytubes/videos",
     "description": "Видео модуль",
     "require": {
         "php": "^5.6 || ^7.0",
