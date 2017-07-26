@@ -209,7 +209,7 @@ class VideoFinder extends Model
 		    $testNum = count($testItems);
 
 		    	// перемешаем тестовые и не тестовые местами
-		    if (count($testedItems) >= 4 && $testNum > 0) {
+		    if (count($testedItems) > 4 && $testNum > 0) {
 
 		    	$totalItemsOnPage = $testedNum + $testNum;
 		    		// Вычислим места, в которых будут стоять тестовые тумбы.
