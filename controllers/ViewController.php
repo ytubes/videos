@@ -62,7 +62,6 @@ class ViewController extends Controller implements ViewContextInterface
 
         $videoFinder = new VideoFinder();
         $data['video'] = $videoFinder->findBySlug($slug);
-        $data['related'] = $videoFinder->getRelatedById($data['video']['video_id']);
 
         $settings = Yii::$app->settings->getAll();
         $settings['videos'] = Yii::$app->getModule('videos')->settings->getAll();

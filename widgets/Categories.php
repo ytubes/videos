@@ -19,7 +19,7 @@ class Categories extends \yii\base\Widget
 	/**
 	 * @var string путь к темплейту виджета
 	 */
-	public $defaultTemplate = __DIR__ . '/views/categories.php';
+	public $template = __DIR__ . '/views/categories.php';
 	/**
 	 * @var array|string сортировка элементов
 	 * Можно использовать следующие параметры:
@@ -62,7 +62,7 @@ class Categories extends \yii\base\Widget
 			return;
 		}
 
-		return $this->renderFile($this->defaultTemplate, [
+		return $this->renderFile($this->template, [
         	'data' => [
         		'categories' => $categories,
             	'active_id' => $this->active_id,

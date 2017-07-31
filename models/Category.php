@@ -2,6 +2,7 @@
 namespace ytubes\videos\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "videos_categories".
@@ -32,8 +33,10 @@ use Yii;
  * @property Video[] $videos
  * @property RotationStats[] $rotationStats
  */
-class Category extends \yii\db\ActiveRecord
+class Category extends ActiveRecord
 {
+	use SlugGenerator;
+
     /**
      * @inheritdoc
      */
@@ -54,9 +57,9 @@ class Category extends \yii\db\ActiveRecord
             [['slug', 'meta_title'], 'string', 'max' => 255],
             [['slug'], 'unique'],
 
-            [['position', 'items_count', 'on_index', 'shows', 'clicks', 'reset_clicks_period'], 'integer'],
-            ['on_index', 'default', 'value' => 1],
-            ['reset_clicks_period', 'default', 'value' => 20000],
+            [['position', 'items_count', 'shows', 'clicks', 'reset_clicks_period'], 'integer'],
+            [['on_index',], 'boolean'],
+            ['on_index', 'default', 'value' => true],
             [['description', 'seotext', 'param1', 'param2', 'param3'], 'string'],
             [['ctr'], 'number'],
             [['created_at', 'updated_at'], 'safe'],

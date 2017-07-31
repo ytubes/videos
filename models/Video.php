@@ -2,6 +2,7 @@
 namespace ytubes\videos\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "videos".
@@ -33,8 +34,10 @@ use Yii;
  * @property Image[] $images
  * @property RotationStats[] $rotationStats
  */
-class Video extends \yii\db\ActiveRecord
+class Video extends ActiveRecord
 {
+	use SlugGenerator;
+
     /**
      * @inheritdoc
      */
@@ -122,16 +125,16 @@ class Video extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRelated()
+    /*public function getRelated()
     {
         return $this->hasMany(Video::className(), ['video_id' => 'related_id'])
 		        	->viaTable(VideosRelatedMap::tableName(), ['video_id' => 'video_id'], function ($query) {
 			            $relatedLimit = (int) Yii::$app->getModule('videos')->settings->get('related_number', 12);
-			            /* @var $query \yii\db\ActiveQuery */
+			            // @var $query \yii\db\ActiveQuery
 
 			            $query->limit($relatedLimit);
 		        });
-    }
+    }*/
 
     /**
      * @return \yii\db\ActiveQuery
