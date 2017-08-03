@@ -21,7 +21,7 @@ use yii\db\ActiveRecord;
  * @property integer $on_index
  * @property integer $likes
  * @property integer $dislikes
- * @property integer $comments_count
+ * @property integer $comments_num
  * @property integer $views
  * @property string $template
  * @property integer $status
@@ -55,7 +55,7 @@ class Video extends ActiveRecord
         	[['title'], 'required'],
         	[['slug', 'title'], 'string', 'max' => 120],
         	[['video_id'], 'integer'],
-            [['image_id', 'user_id', 'orientation', 'duration', 'on_index', 'likes', 'dislikes', 'comments_count', 'views', 'status'], 'integer'],
+            [['image_id', 'user_id', 'orientation', 'duration', 'on_index', 'likes', 'dislikes', 'comments_num', 'views', 'status'], 'integer'],
             [['description'], 'string'],
             [['published_at', 'created_at', 'updated_at'], 'safe'],
             [['short_description', 'video_url', 'source_url', 'embed', 'template'], 'string', 'max' => 255],
@@ -83,7 +83,7 @@ class Video extends ActiveRecord
             'on_index' => 'On Index',
             'likes' => 'Likes',
             'dislikes' => 'Dislikes',
-            'comments_count' => 'Comments Count',
+            'comments_num' => 'Comments Count',
             'views' => 'Views',
             'template' => 'Template',
             'status' => 'Status',

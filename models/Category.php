@@ -20,7 +20,7 @@ use yii\db\ActiveRecord;
  * @property string $param1
  * @property string $param2
  * @property string $param3
- * @property integer $items_count
+ * @property integer $videos_num
  * @property integer $on_index
  * @property integer $shows
  * @property integer $clicks
@@ -57,7 +57,7 @@ class Category extends ActiveRecord
             [['slug', 'meta_title'], 'string', 'max' => 255],
             [['slug'], 'unique'],
 
-            [['position', 'items_count', 'shows', 'clicks', 'reset_clicks_period'], 'integer'],
+            [['position', 'videos_num', 'shows', 'clicks', 'reset_clicks_period'], 'integer'],
             [['on_index',], 'boolean'],
             ['on_index', 'default', 'value' => true],
             [['description', 'seotext', 'param1', 'param2', 'param3'], 'string'],
@@ -85,7 +85,7 @@ class Category extends ActiveRecord
             'param1' => Yii::t('videos', 'Param1'),
             'param2' => Yii::t('videos', 'Param2'),
             'param3' => Yii::t('videos', 'Param3'),
-            'items_count' => Yii::t('videos', 'Items Count'),
+            'videos_num' => Yii::t('videos', 'Items Count'),
             'on_index' => Yii::t('videos', 'On Index'),
             'shows' => Yii::t('videos', 'Shows'),
             'clicks' => Yii::t('videos', 'Clicks'),

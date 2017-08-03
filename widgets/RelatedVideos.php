@@ -7,6 +7,7 @@ use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\base\InvalidConfigException;
 
+use ytubes\videos\Module;
 use ytubes\videos\models\finders\RelatedFinder;
 
 class RelatedVideos extends \yii\base\Widget
@@ -25,6 +26,8 @@ class RelatedVideos extends \yii\base\Widget
 	 */
 	public $items = [];
 
+	public $enable;
+
 	/**
 	 * Initializes the widget
 	 */
@@ -36,6 +39,9 @@ class RelatedVideos extends \yii\base\Widget
 
 			return;
 		}
+		if (is_null($this->enable)) {
+			$this->enable = Module::getInstance()->settings->get('related_enable', true);
+		}
 	}
 
 	/**
@@ -44,6 +50,10 @@ class RelatedVideos extends \yii\base\Widget
 	 * @return string|void
 	 */
 	public function run() {
+
+		if (!$this->enable) {
+			return;
+		}
 
 		$videos = $this->getItems();
 

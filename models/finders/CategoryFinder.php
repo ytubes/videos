@@ -73,7 +73,7 @@ class CategoryFinder extends Model
 				'param1',
 				'param2',
 				'param3',
-				'items_count',
+				'videos_num',
 				'on_index',
 			])
 			//->where(['status' => 10])
@@ -100,7 +100,7 @@ class CategoryFinder extends Model
 			->one();
 	}
 
-	public function getCategoriesIndexedById()
+	/*public function getCategoriesIndexedById()
 	{
 		if (null === $this->categoriesIndexedById) {
 			$this->categoriesIndexedById = self::find()
@@ -161,5 +161,5 @@ class CategoryFinder extends Model
 		}
 
 		return $this->categoriesIdsNamesArray;
-	}
+	}*/
 }

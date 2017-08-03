@@ -46,7 +46,7 @@ class VideoFinder extends Model
         	[['slug'], 'string'],
         	['page', 'integer', 'min' => 1],
 			['page', 'default', 'value' => 1],
-            /*[['video_id', 'image_id', 'user_id', 'orientation', 'duration', 'on_index', 'likes', 'dislikes', 'comments_count', 'views', 'status'], 'integer'],
+            /*[['video_id', 'image_id', 'user_id', 'orientation', 'duration', 'on_index', 'likes', 'dislikes', 'comments_num', 'views', 'status'], 'integer'],
             [['slug', 'title', 'description', 'short_description', 'video_url', 'embed', 'published_at', 'created_at', 'updated_at'], 'safe'],*/
         ];
     }
@@ -140,10 +140,9 @@ class VideoFinder extends Model
 	/**
 	 * Получает ролики для категории.
 	 */
-	public function getVideosFromCategory($category, $page = 1)
+	public function getVideosFromCategory(array $category, $page = 1)
 	{
 		$videos = [];
-
 
 		$totalTestedItems = $this->countVideosFromCategory($category['category_id'], self::TESTED_IMAGE);
 		$totalTestItems = $this->countVideosFromCategory($category['category_id'], self::TEST_IMAGE);
@@ -372,7 +371,7 @@ class VideoFinder extends Model
             'on_index' => $this->on_index,
             'likes' => $this->likes,
             'dislikes' => $this->dislikes,
-            'comments_count' => $this->comments_count,
+            'comments_num' => $this->comments_num,
             'views' => $this->views,
             'status' => $this->status,
             'published_at' => $this->published_at,
