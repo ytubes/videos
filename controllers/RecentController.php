@@ -16,12 +16,12 @@ use ytubes\components\Visitor;
 use ytubes\events\VisitorEvent;
 
 /**
- * VideoController implements the CRUD actions for Videos model.
+ * RecentController implements the CRUD actions for Videos model.
  */
 class RecentController extends Controller implements ViewContextInterface
 {
-	public $request = 'request';
-	public $response = 'response';
+    public $request = 'request';
+    public $response = 'response';
 
     public function init()
     {
@@ -38,20 +38,20 @@ class RecentController extends Controller implements ViewContextInterface
     {
         return [
             'queryParams' => [
-            	'class' => QueryParamsFilter::class,
-            	'actions' => [
-            		'index' => ['page'],
-            		'category' => ['slug', 'sort', 'page'],
-            		'view' => ['slug'],
-            	],
+                'class' => QueryParamsFilter::class,
+                'actions' => [
+                    'index' => ['page'],
+                    'category' => ['slug', 'sort', 'page'],
+                    'view' => ['slug'],
+                ],
             ],
         ];
     }
 
-	public function getViewPath()
-	{
-	    return Yii::getAlias('@frontend/views/videos');
-	}
+    public function getViewPath()
+    {
+        return Yii::getAlias('@frontend/views/videos');
+    }
     /**
      * Lists all Videos models.
      * @return mixed
@@ -67,7 +67,7 @@ class RecentController extends Controller implements ViewContextInterface
 
         $pagination = new Pagination([
             'totalCount' => $data['total_items'],
-            'defaultPageSize' => (int) Yii::$app->getModule('videos')->settings->get('items_per_page', 20),
+            'defaultPageSize' => (int) Module::getInstance()->settings->get('items_per_page', 20),
             'route' => $data['route'],
             'forcePageParam' => false,
         ]);
@@ -76,7 +76,7 @@ class RecentController extends Controller implements ViewContextInterface
         $settings['videos'] = Module::getInstance()->settings->getAll();
 
         if (!Visitor::isCrawler()) {
-        	Event::on(self::class, self::EVENT_AFTER_ACTION, [VisitorEvent::class, 'onView']);
+            Event::on(self::class, self::EVENT_AFTER_ACTION, [VisitorEvent::class, 'onView']);
         }
 
         return $this->render('recent', [
