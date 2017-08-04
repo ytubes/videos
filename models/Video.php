@@ -92,71 +92,55 @@ class Video extends ActiveRecord
             'updated_at' => 'Updated At',
         ];
     }
-
     /**
-     * @return \yii\db\ActiveQuery
+     * @return boolean
      */
-    public function getVideosCategoriesMap()
-    {
-        return $this->hasMany(VideosCategoriesMap::className(), ['video_id' => 'video_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    /*public function getCategories()
-    {
-        return $this->hasMany(Category::className(), ['category_id' => 'category_id'])
-        	->viaTable(VideosCategoriesMap::tableName(), ['video_id' => 'video_id']);
-    }*/
-
+	public function hasCategories()
+	{
+		return !empty($this->categories);
+	}
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getCategories()
     {
-        return $this->hasMany(Category::className(), ['category_id' => 'category_id'])
-				->viaTable(RotationStats::tableName(), ['video_id' => 'video_id'], function ($query) {
-			        	/** @var $query \yii\db\ActiveQuery */
-			    	$query->select(['video_id', 'category_id']);
-		        });
+        return $this->hasMany(Category::class, ['category_id' => 'category_id'])
+        	->viaTable(VideosCategoriesMap::tableName(), ['video_id' => 'video_id']);
     }
-
     /**
-     * @return \yii\db\ActiveQuery
+     * @return boolean
      */
-    /*public function getRelated()
-    {
-        return $this->hasMany(Video::className(), ['video_id' => 'related_id'])
-		        	->viaTable(VideosRelatedMap::tableName(), ['video_id' => 'video_id'], function ($query) {
-			            $relatedLimit = (int) Yii::$app->getModule('videos')->settings->get('related_number', 12);
-			            // @var $query \yii\db\ActiveQuery
-
-			            $query->limit($relatedLimit);
-		        });
-    }*/
-
+	public function hasImage()
+	{
+		return ($this->image instanceof Image);
+	}
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getImage()
     {
-        return $this->hasOne(Image::className(), ['image_id' => 'image_id']);
+        return $this->hasOne(Image::class, ['image_id' => 'image_id']);
     }
-
     /**
-     * @return \yii\db\ActiveQuery
+     * @return boolean
+     */
+	public function hasImages()
+	{
+		return !empty($this->images);
+	}
+    /**
+     * @return \yii\db\ActiveQuery[]
      */
     public function getImages()
     {
-        return $this->hasMany(Image::className(), ['video_id' => 'video_id']);
+        return $this->hasMany(Image::class, ['video_id' => 'video_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \yii\db\ActiveQuery[]
      */
     public function getRotationStats()
     {
-        return $this->hasMany(RotationStats::className(), ['video_id' => 'video_id']);
+        return $this->hasMany(RotationStats::class, ['video_id' => 'video_id']);
     }
 }

@@ -5,13 +5,14 @@ use Yii;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
+use yii\base\Widget;
 use yii\base\InvalidConfigException;
 
 use ytubes\videos\models\finders\CategoryFinder;
 
-class Categories extends \yii\base\Widget
+class Categories extends Widget
 {
-	private $cacheKey = 'widget:categories:';
+	private $cacheKey = 'videos:widgets:categories:';
     /**
      * @var int Идентификатор текущей активной категории;
      */

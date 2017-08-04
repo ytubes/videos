@@ -6,13 +6,14 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\base\InvalidConfigException;
+use yii\base\Widget;
 
 use ytubes\videos\Module;
 use ytubes\videos\models\finders\RelatedFinder;
 
-class RelatedVideos extends \yii\base\Widget
+class RelatedVideos extends Widget
 {
-	private $cacheKey = 'widget:related_videos:';
+	private $cacheKey = 'videos:widgets:related_videos:';
 	/**
 	 * @var string путь к темплейту виджета
 	 */

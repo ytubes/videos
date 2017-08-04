@@ -4,22 +4,22 @@ namespace ytubes\videos\models;
 use Yii;
 
 /**
- * This is the model class for table "videos_related_map".
+ * This is the model class for table "videos_categories_map".
  *
+ * @property integer $category_id
  * @property integer $video_id
- * @property integer $related_id
  *
  * @property Videos $video
- * @property Videos $related
+ * @property Videos $category
  */
-class VideosRelatedMap extends \yii\db\ActiveRecord
+class VideosCategoriesMap extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'videos_related_map';
+        return 'videos_categories_map';
     }
 
     /**
@@ -28,10 +28,10 @@ class VideosRelatedMap extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['video_id', 'related_id'], 'required'],
-            [['video_id', 'related_id'], 'integer'],
+            [['category_id', 'video_id'], 'required'],
+            [['category_id', 'video_id'], 'integer'],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'category_id']],
             [['video_id'], 'exist', 'skipOnError' => true, 'targetClass' => Video::class, 'targetAttribute' => ['video_id' => 'video_id']],
-            [['related_id'], 'exist', 'skipOnError' => true, 'targetClass' => Video::class, 'targetAttribute' => ['related_id' => 'video_id']],
         ];
     }
 
@@ -42,7 +42,7 @@ class VideosRelatedMap extends \yii\db\ActiveRecord
     {
         return [
             'video_id' => 'Video ID',
-            'related_id' => 'Related ID',
+            'category_id' => 'Category ID',
         ];
     }
 
@@ -57,8 +57,8 @@ class VideosRelatedMap extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRelated()
+    public function getCategory()
     {
-        return $this->hasOne(Video::class, ['video_id' => 'related_id']);
+        return $this->hasOne(Category::class, ['category_id' => 'category_id']);
     }
 }

@@ -40,9 +40,9 @@ class RotationStats extends \yii\db\ActiveRecord
             [['category_id', 'image_id', 'video_id', 'best_image', 'duration', 'current_shows', 'current_clicks'], 'integer'],
             [['published_at'], 'safe'],
             [['ctr'], 'number'],
-            [['video_id'], 'exist', 'skipOnError' => true, 'targetClass' => Video::className(), 'targetAttribute' => ['video_id' => 'video_id']],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'category_id']],
-            [['image_id'], 'exist', 'skipOnError' => true, 'targetClass' => Image::className(), 'targetAttribute' => ['image_id' => 'image_id']],
+            [['video_id'], 'exist', 'skipOnError' => true, 'targetClass' => Video::class, 'targetAttribute' => ['video_id' => 'video_id']],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'category_id']],
+            [['image_id'], 'exist', 'skipOnError' => true, 'targetClass' => Image::class, 'targetAttribute' => ['image_id' => 'image_id']],
         ];
     }
 
@@ -69,7 +69,7 @@ class RotationStats extends \yii\db\ActiveRecord
      */
     public function getVideo()
     {
-        return $this->hasOne(Video::className(), ['video_id' => 'video_id']);
+        return $this->hasOne(Video::class, ['video_id' => 'video_id']);
     }
 
     /**
@@ -77,7 +77,7 @@ class RotationStats extends \yii\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Category::className(), ['category_id' => 'category_id']);
+        return $this->hasOne(Category::class, ['category_id' => 'category_id']);
     }
 
     /**
@@ -85,7 +85,7 @@ class RotationStats extends \yii\db\ActiveRecord
      */
     public function getCategories()
     {
-        return $this->hasMany(Category::className(), ['category_id' => 'category_id'])
+        return $this->hasMany(Category::class, ['category_id' => 'category_id'])
 				->viaTable(RotationStats::tableName(), ['video_id' => 'video_id'], function ($query) {
 			        /* @var $query \yii\db\ActiveQuery */
 
@@ -98,6 +98,6 @@ class RotationStats extends \yii\db\ActiveRecord
      */
     public function getImage()
     {
-        return $this->hasOne(Image::className(), ['image_id' => 'image_id']);
+        return $this->hasOne(Image::class, ['image_id' => 'image_id']);
     }
 }

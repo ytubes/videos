@@ -7,9 +7,13 @@ use yii\base\Event;
 use yii\base\ViewContextInterface;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Request;
+use yii\web\Response;
+use yii\web\Session;
 
 use yii\data\Pagination;
 
+use ytubes\videos\Module;
 use ytubes\videos\models\Category;
 use ytubes\videos\models\RotationStats;
 use ytubes\videos\models\finders\VideoFinder;
@@ -17,9 +21,7 @@ use ytubes\videos\models\finders\CategoryFinder;
 
 use ytubes\components\filters\QueryParamsFilter;
 use ytubes\components\Visitor;
-
-
-
+use ytubes\events\VisitorEvent;
 use yii\filters\VerbFilter;
 
 /**
@@ -29,13 +31,15 @@ class CategoryController extends Controller implements ViewContextInterface
 {
 	public $request = 'request';
 	public $response = 'response';
+	public $session = 'session';
 
     public function init()
     {
         parent::init();
 
-        $this->request = Instance::ensure($this->request, \yii\web\Request::className());
-        $this->response = Instance::ensure($this->response, \yii\web\Response::className());
+        $this->request = Instance::ensure($this->request, Request::class);
+        $this->response = Instance::ensure($this->response, Response::class);
+        $this->session = Instance::ensure($this->session, Session::class);
     }
 
     /**
@@ -88,24 +92,23 @@ class CategoryController extends Controller implements ViewContextInterface
         ]);
 
         $settings = Yii::$app->settings->getAll();
-        $settings['videos'] = Yii::$app->getModule('videos')->settings->getAll();
+        $settings['videos'] = Module::getInstance()->settings->getAll();
 
         if (!Visitor::isCrawler()) {
             $image_ids = array_keys($data['videos']);
 
             RotationStats::updateAllCounters(['current_shows' => 1], ['image_id' => $image_ids, 'category_id' => $data['category']['category_id']]);
 
-	        $session = Yii::$app->get('session');
-	        $session->open();
+	        $this->session->open();
 
-	        if ($session->isActive) {
-	            $session['prev_location'] = [
+	        if ($this->session->isActive) {
+	            $this->session['prev_location'] = [
 	                'route' => $this->getRoute(),
 	                'category_id' => $data['category']['category_id'],
 	            ];
 	        }
 
-	        Event::on(self::className(), self::EVENT_AFTER_ACTION, ['ytubes\events\VisitorEvent', 'onView']);
+	        Event::on(self::class, self::EVENT_AFTER_ACTION, [VisitorEvent::class, 'onView']);
         }
 
         return $this->render('category_videos', [

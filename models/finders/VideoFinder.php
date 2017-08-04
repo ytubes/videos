@@ -8,7 +8,9 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\data\Sort;
 
+use ytubes\videos\Module;
 use ytubes\videos\models\Video;
+use ytubes\videos\models\VideoStatus;
 use ytubes\videos\models\Category;
 use ytubes\videos\models\RotationStats;
 use ytubes\videos\models\VideosRelatedMap;
@@ -69,12 +71,12 @@ class VideoFinder extends Model
         $video = Video::find()
 			->with(['images' => function ($imageQuery) {
 				$imageQuery->select(['image_id', 'video_id', 'filepath', 'source_url'])
-				->indexBy('image_id');
+					->indexBy('image_id');
 			}])
 			->with(['categories' => function ($categoryQuery) {
 				$categoryQuery->select(['category_id', 'title', 'slug', 'h1']);
 			}])
-            ->where(['slug' => $slug, 'status' => 10])
+            ->where(['slug' => $slug, 'status' => VideoStatus::PUBLISH])
             ->asArray()
             ->one();
 
@@ -99,8 +101,8 @@ class VideoFinder extends Model
 			->with(['image' => function ($imageQuery) {
 				$imageQuery->select(['image_id', 'video_id', 'filepath', 'source_url']);
 			}])
-			->where(['`r`.`video_id`' => (int) $id, 'status' => 10])
-			->limit((int) Yii::$app->getModule('videos')->settings->get('related_number', self::RELATED_NUMBER))
+			->where(['`r`.`video_id`' => (int) $id, 'status' => VideoStatus::PUBLISH])
+			->limit((int) Module::getInstance()->settings->get('related_number', self::RELATED_NUMBER))
 			->asArray()
 			->all();
 
@@ -112,29 +114,31 @@ class VideoFinder extends Model
 	 */
 	public function getNewVideos($page)
 	{
-		$videos = [];
-
-		$videosSearch = Video::find()
+		$videoQuery = Video::find()
 			->with(['categories' => function ($categoryQuery) {
 				$categoryQuery->select(['category_id', 'title', 'slug', 'h1']);
 			}])
 			->with(['image' => function ($imageQuery) {
 				$imageQuery->select(['image_id', 'video_id', 'filepath', 'source_url']);
 			}])
-			->where(['status' => 10]);
+			->where(['status' => VideoStatus::PUBLISH])
+			->asArray();
 
-		$items_per_page = (int) Yii::$app->getModule('videos')->settings->get('items_per_page', self::ITEMS_PER_PAGE);
-		$offset = ($page - 1) * $items_per_page;
+		$provider = new ActiveDataProvider([
+		    'query' => $videoQuery,
+		    'pagination' => [
+		        'pageSize' => (int) Module::getInstance()->settings->get('items_per_page', self::ITEMS_PER_PAGE),
+		    ],
+		    'sort' => [
+		        'defaultOrder' => [
+		            'published_at' => SORT_DESC,
+		        ]
+		    ],
+		]);
 
-        $videos = $videosSearch->orderBy(['published_at' => SORT_DESC])
-        	->limit($items_per_page)
-        	->offset($offset)
-        	->asArray()
-        	->all();
+        $this->totalItems = $provider->getTotalCount();
 
-        $this->totalItems = $videosSearch->count();
-
-        return $videos;
+        return $provider->getModels();
 	}
 
 	/**
@@ -152,8 +156,8 @@ class VideoFinder extends Model
 	    	return [];
 	    }
 
-		$items_per_page = (int) Yii::$app->getModule('videos')->settings->get('items_per_page', self::ITEMS_PER_PAGE);
-		$test_items_percent = (int) Yii::$app->getModule('videos')->settings->get('test_items_percent', self::TEST_ITEMS_PERCENT);
+		$items_per_page = (int) Module::getInstance()->settings->get('items_per_page', self::ITEMS_PER_PAGE);
+		$test_items_percent = (int) Module::getInstance()->settings->get('test_items_percent', self::TEST_ITEMS_PERCENT);
 
 			// Проверим, является ли текущая страница валидной.
 		$totalPages = ceil($this->totalItems / $items_per_page);
@@ -282,7 +286,7 @@ class VideoFinder extends Model
 			->andWhere([
 	            'category_id' => $category_id,
 	            'best_image' => 1,
-	            'status' => 10,
+	            'status' => VideoStatus::PUBLISH,
 	        ])
 	        ->count();
 
@@ -299,14 +303,14 @@ class VideoFinder extends Model
 	            'category_id' => $category_id,
 	            'best_image' => 1,
 				//'tested_image' => $tested,
-	            //'status' => 10,
+	            //'status' => VideoStatus::PUBLISH,
 	        ]);
 	     if ($tested !== null) {
 	     	$counter->andWhere(['tested_image' => $tested]);
 	     }
 
 	     $count = $counter
-	     	->andWhere(['status' => 10])
+	     	->andWhere(['status' => VideoStatus::PUBLISH])
 	        ->count();
 
         return (int) $count;
@@ -326,7 +330,7 @@ class VideoFinder extends Model
 	            'category_id' =>  $category_id,
 	            'best_image' => 1,
 	            'tested_image' => $tested,
-	            'status' => 10,
+	            'status' => VideoStatus::PUBLISH,
 	        ])
             ->limit($items_per_page)
             ->offset($offset)

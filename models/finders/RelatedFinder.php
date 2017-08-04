@@ -5,6 +5,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use ytubes\videos\Module;
 use ytubes\videos\models\Video;
+use ytubes\videos\models\VideoStatus;
 use ytubes\videos\models\VideosRelatedMap;
 use ytubes\videos\models\RotationStats;
 
@@ -38,7 +39,7 @@ class RelatedFinder
 			->with(['image' => function ($imageQuery) {
 				$imageQuery->select(['image_id', 'video_id', 'filepath', 'source_url']);
 			}])
-			->where(['`r`.`video_id`' => (int) $video_id, 'status' => 10])
+			->where(['`r`.`video_id`' => (int) $video_id, 'status' => VideoStatus::PUBLISH])
 			->limit($requiredRelatedNum)
 			->asArray()
 			->all();
@@ -101,7 +102,7 @@ class RelatedFinder
 			->where('MATCH (`title`, `description`, `short_description`) AGAINST (:query) AND `v`.`video_id`!=:video_id AND `v`.`status`=:status', [
 				':query'=> $searchString,
 				':video_id' => $video->video_id,
-				':status' => 10,
+				':status' => VideoStatus::PUBLISH,
 			])
     		->groupBy('`v`.`video_id`')
     		->orderBy(['title_relevance' => SORT_DESC, 'relevance' => SORT_DESC])

@@ -4,12 +4,16 @@ namespace ytubes\videos\controllers;
 use Yii;
 use yii\di\Instance;
 use yii\web\Controller;
+use yii\web\Request;
+use yii\web\Response;
 use yii\data\Pagination;
 use yii\base\Event;
 use yii\base\ViewContextInterface;
+use ytubes\videos\Module;
 use ytubes\videos\models\finders\VideoFinder;
 use ytubes\components\filters\QueryParamsFilter;
 use ytubes\components\Visitor;
+use ytubes\events\VisitorEvent;
 
 /**
  * VideoController implements the CRUD actions for Videos model.
@@ -23,8 +27,8 @@ class RecentController extends Controller implements ViewContextInterface
     {
         parent::init();
 
-        $this->request = Instance::ensure($this->request, \yii\web\Request::className());
-        $this->response = Instance::ensure($this->response, \yii\web\Response::className());
+        $this->request = Instance::ensure($this->request, Request::class);
+        $this->response = Instance::ensure($this->response, Response::class);
     }
 
     /**
@@ -69,10 +73,10 @@ class RecentController extends Controller implements ViewContextInterface
         ]);
 
         $settings = Yii::$app->settings->getAll();
-        $settings['videos'] = Yii::$app->getModule('videos')->settings->getAll();
+        $settings['videos'] = Module::getInstance()->settings->getAll();
 
         if (!Visitor::isCrawler()) {
-        	Event::on(self::className(), self::EVENT_AFTER_ACTION, ['ytubes\events\VisitorEvent', 'onView']);
+        	Event::on(self::class, self::EVENT_AFTER_ACTION, [VisitorEvent::class, 'onView']);
         }
 
         return $this->render('recent', [

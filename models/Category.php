@@ -99,16 +99,16 @@ class Category extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    /*public function getVideos()
+    public function getVideos()
     {
-        return $this->hasMany(Video::className(), ['video_id' => 'video_id'])->viaTable('videos_categories_map1', ['category_id' => 'category_id']);
-    }*/
+        return $this->hasMany(Video::class, ['video_id' => 'video_id'])->viaTable(VideosCategoriesMap::tableName(), ['category_id' => 'category_id']);
+    }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getRotationStats()
     {
-        return $this->hasMany(RotationStats::className(), ['category_id' => 'category_id']);
+        return $this->hasMany(RotationStats::class, ['category_id' => 'category_id']);
     }
 }

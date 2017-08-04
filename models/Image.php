@@ -38,7 +38,7 @@ class Image extends \yii\db\ActiveRecord
             [['created_at'], 'safe'],
             [['filehash'], 'string', 'max' => 32],
             [['filepath', 'source_url'], 'string', 'max' => 255],
-            [['video_id'], 'exist', 'skipOnError' => true, 'targetClass' => Video::className(), 'targetAttribute' => ['video_id' => 'video_id']],
+            [['video_id'], 'exist', 'skipOnError' => true, 'targetClass' => Video::class, 'targetAttribute' => ['video_id' => 'video_id']],
         ];
     }
 
@@ -64,7 +64,7 @@ class Image extends \yii\db\ActiveRecord
      */
     public function getVideo()
     {
-        return $this->hasOne(Video::className(), ['video_id' => 'video_id']);
+        return $this->hasOne(Video::class, ['video_id' => 'video_id']);
     }
 
     /**
@@ -72,6 +72,6 @@ class Image extends \yii\db\ActiveRecord
      */
     public function getRotationStats()
     {
-        return $this->hasMany(RotationStats::className(), ['image_id' => 'image_id']);
+        return $this->hasMany(RotationStats::class, ['image_id' => 'image_id']);
     }
 }
