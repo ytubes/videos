@@ -8,6 +8,7 @@ use ytubes\videos\models\Video;
 use ytubes\videos\models\VideoStatus;
 use ytubes\videos\models\VideosRelatedMap;
 use ytubes\videos\models\RotationStats;
+use ytubes\videos\models\VideosCategoriesMap;
 
 /**
  * RelatedFinder содержит методы для поиска похожих роликов.
@@ -94,7 +95,7 @@ class RelatedFinder
         if ($allowCategories && !empty($video->categories)) {
                 // выборка всех идентификаторов категорий поста.
             $categoriesIds = ArrayHelper::getColumn($video->categories, 'category_id');
-            $relatedModels->join('RIGHT JOIN', RotationStats::tableName() . ' cim', '{{cim}}.{{category_id}} IN (' . (implode(',', $categoriesIds)) . ') AND {{cim}}.{{video_id}}={{v}}.{{video_id}}');
+            $relatedModels->join('RIGHT JOIN', VideosCategoriesMap::tableName() . ' cim', '{{cim}}.{{category_id}} IN (' . (implode(',', $categoriesIds)) . ') AND {{cim}}.{{video_id}}={{v}}.{{video_id}}');
         }
 
         $relatedVideos = $relatedModels
