@@ -22,7 +22,7 @@ class RelatedFinder
 
     public function __construct()
     {
-        $this->settings = Module::getInstance()->settings;
+        $this->settings = Yii::$app->getModule('videos')->settings;
     }
 
     public function getFromTable($video_id)
