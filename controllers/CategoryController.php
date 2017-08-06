@@ -86,7 +86,8 @@ class CategoryController extends Controller implements ViewContextInterface
 
         $pagination = new Pagination([
             'totalCount' => $videoFinder->totalCount(),
-            'defaultPageSize' => (int) Yii::$app->getModule('videos')->settings->get('items_per_page', 20),
+            'defaultPageSize' => Module::getInstance()->settings->get('items_per_page', 20),
+            'pageSize' => Module::getInstance()->settings->get('items_per_page', 20),
             'route' => $data['route'],
             'forcePageParam' => false,
         ]);
