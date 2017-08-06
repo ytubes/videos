@@ -67,7 +67,8 @@ class RecentController extends Controller implements ViewContextInterface
 
         $pagination = new Pagination([
             'totalCount' => $data['total_items'],
-            'defaultPageSize' => (int) Module::getInstance()->settings->get('items_per_page', 20),
+            'defaultPageSize' => Module::getInstance()->settings->get('items_per_page', 20),
+            'pageSize' => Module::getInstance()->settings->get('items_per_page', 20),
             'route' => $data['route'],
             'forcePageParam' => false,
         ]);
