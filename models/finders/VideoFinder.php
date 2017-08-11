@@ -207,13 +207,15 @@ class VideoFinder extends Model
             $testedNum = count($testedItems);
             $testNum = count($testItems);
 
+            $testItemStart = (int) Yii::$app->getModule('videos')->settings->get('test_items_start', self::TEST_ITEMS_START);
+
                 // перемешаем тестовые и не тестовые местами
-            if (count($testedItems) > 4 && $testNum > 0) {
+            if (count($testedItems) >= $testItemStart && $testNum > 0) {
 
                 $totalItemsOnPage = $testedNum + $testNum;
                     // Вычислим места, в которых будут стоять тестовые тумбы.
                 $filledArray = range(0, $totalItemsOnPage - 1);
-                array_splice($filledArray, 0, 5);
+                array_splice($filledArray, 0, $testItemStart);
                 $randKeys = (array) array_rand($filledArray, $testNum);
                 $testPlacePositions = array_values(array_intersect_key($filledArray, array_flip($randKeys)));
 
