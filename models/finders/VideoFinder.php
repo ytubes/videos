@@ -27,6 +27,7 @@ class VideoFinder extends Model
 
     const ITEMS_PER_PAGE = 20;
     const TEST_ITEMS_PERCENT = 0;
+    const TEST_ITEMS_START = 3;
     const RELATED_NUMBER = 12;
 
     const TEST_IMAGE = 0;
