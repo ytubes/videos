@@ -19,8 +19,8 @@ trait SlugGenerator
             $slug = 'default-slug';
 
             // если слаг существует, добавляем к нему индекс, до тех пор пока не станет уникальным.
-        if ($this->checkExistsSlug($slug)) {
-            for ($index = 1; $this->checkExistsSlug($new_slug = $slug . '-' . $index); $index++ ) {}
+        if ($this->existsSlug($slug) && $this->slug !== $slug) {
+            for ($index = 1; $this->existsSlug($new_slug = $slug . '-' . $index); $index++ ) {}
             $slug = $new_slug;
         }
 
@@ -32,9 +32,9 @@ trait SlugGenerator
      * @param string $slug
      * @return bool
      */
-    private function checkExistsSlug($slug)
+    private function existsSlug($slug)
     {
-        return (boolean) self::find()
+        return self::find()
             ->where(['slug' => $slug])
             ->exists();
     }
