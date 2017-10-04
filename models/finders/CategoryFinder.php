@@ -53,7 +53,7 @@ class CategoryFinder
                 'videos_num',
                 'on_index',
             ])
-            //->where(['status' => 10])
+            ->where(['enabled' => 1])
             ->orderBy($order)
             ->asArray()
             ->all();
@@ -63,7 +63,7 @@ class CategoryFinder
     public static function findById($id)
     {
         return self::find()
-            ->where(['category_id' => $id/*, 'status' => 10*/])
+            ->where(['category_id' => $id, 'enabled' => 1])
             ->asArray()
             ->one();
     }
@@ -72,7 +72,7 @@ class CategoryFinder
     public static function findBySlug($slug)
     {
         return self::find()
-            ->where(['slug' => $slug/*, 'status' => 10*/])
+            ->where(['slug' => $slug, 'enabled' => 1])
             ->asArray()
             ->one();
     }

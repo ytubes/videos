@@ -71,7 +71,8 @@ class VideoFinder extends Model
                     ->indexBy('image_id');
             }])
             ->with(['categories' => function ($categoryQuery) {
-                $categoryQuery->select(['category_id', 'title', 'slug', 'h1']);
+                $categoryQuery->select(['category_id', 'title', 'slug', 'h1'])
+                	->where(['enabled' => 1]);
             }])
             ->where(['slug' => $slug, 'status' => VideoStatus::PUBLISH])
             ->asArray()
@@ -93,7 +94,8 @@ class VideoFinder extends Model
             ->from(['r' => VideosRelatedMap::tableName()])
             ->leftJoin(['v' => Video::tableName()], '{{v}}.{{video_id}}={{r}}.{{related_id}}')
             ->with(['categories' => function ($categoryQuery) {
-                $categoryQuery->select(['category_id', 'title', 'slug', 'h1']);
+                $categoryQuery->select(['category_id', 'title', 'slug', 'h1'])
+                	->where(['enabled' => 1]);
             }])
             ->with(['image' => function ($imageQuery) {
                 $imageQuery->select(['image_id', 'video_id', 'filepath', 'source_url']);
@@ -113,7 +115,8 @@ class VideoFinder extends Model
     {
         $videoQuery = Video::find()
             ->with(['categories' => function ($categoryQuery) {
-                $categoryQuery->select(['category_id', 'title', 'slug', 'h1']);
+                $categoryQuery->select(['category_id', 'title', 'slug', 'h1'])
+                	->where(['enabled' => 1]);
             }])
             ->with(['image' => function ($imageQuery) {
                 $imageQuery->select(['image_id', 'video_id', 'filepath', 'source_url']);
@@ -323,7 +326,8 @@ class VideoFinder extends Model
                 $imageQuery->select(['image_id', 'video_id', 'filepath', 'source_url']);
             }])
             ->with(['categories' => function ($categoryQuery) {
-                $categoryQuery->select(['category_id', 'title', 'slug', 'h1']);
+                $categoryQuery->select(['category_id', 'title', 'slug', 'h1'])
+                	->where(['enabled' => 1]);
             }])
             ->andWhere([
                 'category_id' =>  $category_id,

@@ -26,6 +26,7 @@ use yii\db\ActiveRecord;
  * @property integer $clicks
  * @property double $ctr
  * @property integer $reset_clicks_period
+ * @property integer $enabled
  * @property string $created_at
  * @property string $updated_at
  *
@@ -35,7 +36,7 @@ use yii\db\ActiveRecord;
  */
 class Category extends ActiveRecord
 {
-	use SlugGenerator;
+    use SlugGenerator;
 
     /**
      * @inheritdoc
@@ -58,8 +59,10 @@ class Category extends ActiveRecord
             [['slug'], 'unique'],
 
             [['position', 'videos_num', 'shows', 'clicks', 'reset_clicks_period'], 'integer'],
-            [['on_index',], 'boolean'],
+            ['reset_clicks_period', 'default', 'value' => 20000],
+            [['on_index', 'enabled'], 'boolean'],
             ['on_index', 'default', 'value' => true],
+            ['enabled', 'default', 'value' => false],
             [['description', 'seotext', 'param1', 'param2', 'param3'], 'string'],
             [['ctr'], 'number'],
             [['created_at', 'updated_at'], 'safe'],
@@ -91,11 +94,11 @@ class Category extends ActiveRecord
             'clicks' => Yii::t('videos', 'Clicks'),
             'ctr' => Yii::t('videos', 'Ctr'),
             'reset_clicks_period' => Yii::t('videos', 'Reset Clicks Period'),
+            'enabled' => Yii::t('videos', 'Enabled'),
             'created_at' => Yii::t('videos', 'Created At'),
             'updated_at' => Yii::t('videos', 'Updated At'),
         ];
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -103,12 +106,18 @@ class Category extends ActiveRecord
     {
         return $this->hasMany(Video::class, ['video_id' => 'video_id'])->viaTable(VideosCategoriesMap::tableName(), ['category_id' => 'category_id']);
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getRotationStats()
     {
         return $this->hasMany(RotationStats::class, ['category_id' => 'category_id']);
+    }
+    /**
+     * @return boolean
+     */
+    public function isActive()
+    {
+    	return (bool) $this->enabled;
     }
 }
