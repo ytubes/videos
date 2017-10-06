@@ -29,7 +29,6 @@ class RotationStats extends \yii\db\ActiveRecord
     {
         return 'videos_stats';
     }
-
     /**
      * @inheritdoc
      */
@@ -45,7 +44,6 @@ class RotationStats extends \yii\db\ActiveRecord
             [['image_id'], 'exist', 'skipOnError' => true, 'targetClass' => Image::class, 'targetAttribute' => ['image_id' => 'image_id']],
         ];
     }
-
     /**
      * @inheritdoc
      */
@@ -63,7 +61,6 @@ class RotationStats extends \yii\db\ActiveRecord
             'ctr' => 'Ctr',
         ];
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -71,7 +68,6 @@ class RotationStats extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Video::class, ['video_id' => 'video_id']);
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -79,25 +75,49 @@ class RotationStats extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Category::class, ['category_id' => 'category_id']);
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getCategories()
     {
         return $this->hasMany(Category::class, ['category_id' => 'category_id'])
-				->viaTable(RotationStats::tableName(), ['video_id' => 'video_id'], function ($query) {
-			        /* @var $query \yii\db\ActiveQuery */
+                ->viaTable(RotationStats::tableName(), ['video_id' => 'video_id'], function ($query) {
+                    /* @var $query \yii\db\ActiveQuery */
 
-			    	$query->select(['video_id', 'category_id']);
-		        });
+                    $query->select(['video_id', 'category_id']);
+                });
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getImage()
     {
         return $this->hasOne(Image::class, ['image_id' => 'image_id']);
+    }
+    /**
+     * @inheritdoc
+     */
+    public static function addVideo(Category $category, Video $video, Image $image, $isBest = false)
+    {
+        $exists = self::find()
+            ->where(['video_id' => $video->video_id, 'category_id' => $category->category_id, 'image_id' => $image->image_id])
+            ->exists();
+
+        if ($exists)
+            return true;
+
+        $rotationStats = new static();
+
+        $rotationStats->video_id = $video->video_id;
+        $rotationStats->category_id = $category->category_id;
+        $rotationStats->image_id = $image->image_id;
+        $rotationStats->published_at = $video->published_at;
+        $rotationStats->duration = (int) $video->duration;
+
+        if (true === (bool) $isBest) {
+            $rotationStats->best_image = 1;
+        }
+
+        return $rotationStats->save();
     }
 }
