@@ -36,7 +36,7 @@ use yii\db\ActiveRecord;
  */
 class Video extends ActiveRecord
 {
-	use SlugGenerator;
+    use SlugGenerator;
 
     /**
      * @inheritdoc
@@ -52,16 +52,15 @@ class Video extends ActiveRecord
     public function rules()
     {
         return [
-        	[['title'], 'required'],
-        	[['slug', 'title'], 'string', 'max' => 120],
-        	[['video_id'], 'integer'],
+            [['title'], 'required'],
+            [['slug', 'title'], 'string', 'max' => 120],
+            [['video_id'], 'integer'],
             [['image_id', 'user_id', 'orientation', 'duration', 'on_index', 'likes', 'dislikes', 'comments_num', 'views', 'status'], 'integer'],
             [['description'], 'string'],
             [['published_at', 'created_at', 'updated_at'], 'safe'],
             [['short_description', 'video_url', 'source_url', 'embed', 'template'], 'string', 'max' => 255],
         ];
     }
-
     /**
      * @inheritdoc
      */
@@ -95,25 +94,25 @@ class Video extends ActiveRecord
     /**
      * @return boolean
      */
-	public function hasCategories()
-	{
-		return !empty($this->categories);
-	}
+    public function hasCategories()
+    {
+        return !empty($this->categories);
+    }
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getCategories()
     {
         return $this->hasMany(Category::class, ['category_id' => 'category_id'])
-        	->viaTable(VideosCategoriesMap::tableName(), ['video_id' => 'video_id']);
+            ->viaTable(VideosCategoriesMap::tableName(), ['video_id' => 'video_id']);
     }
     /**
      * @return boolean
      */
-	public function hasImage()
-	{
-		return ($this->image instanceof Image);
-	}
+    public function hasImage()
+    {
+        return ($this->image instanceof Image);
+    }
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -124,10 +123,10 @@ class Video extends ActiveRecord
     /**
      * @return boolean
      */
-	public function hasImages()
-	{
-		return !empty($this->images);
-	}
+    public function hasImages()
+    {
+        return !empty($this->images);
+    }
     /**
      * @return \yii\db\ActiveQuery[]
      */
@@ -143,4 +142,26 @@ class Video extends ActiveRecord
     {
         return $this->hasMany(RotationStats::class, ['video_id' => 'video_id']);
     }
+    /**
+     * @inheritdoc
+     */
+     public function addCategory(Category $category)
+     {
+         $exists = VideosCategoriesMap::find()
+             ->where(['category_id' => $category->category_id, 'video_id' => $this->video_id])
+             ->exists();
+
+         if ($exists) {
+             return true;
+         }
+
+         return $this->link('categories', $category);
+     }
+    /**
+     * @inheritdoc
+     */
+     public function removeCategory(Category $category)
+     {
+         $this->unlink('categories', $category, true);
+     }
 }
