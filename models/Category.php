@@ -54,7 +54,7 @@ class Category extends ActiveRecord
         return [
             [['title'], 'required'],
             [['title', 'h1', 'image'], 'string', 'max' => 255],
-            [['meta_description'], 'string', 'max' => 250],
+            [['meta_description'], 'string', 'max' => 255],
             [['slug', 'meta_title'], 'string', 'max' => 255],
             [['slug'], 'unique'],
 
