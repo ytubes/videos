@@ -7,9 +7,6 @@ use yii\base\Event;
 use yii\base\ViewContextInterface;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\web\Request;
-use yii\web\Response;
-use yii\web\Session;
 
 use ytubes\videos\Module;
 use ytubes\videos\models\Video;
@@ -25,19 +22,8 @@ use ytubes\events\VisitorEvent;
  */
 class ViewController extends Controller implements ViewContextInterface
 {
-	public $request = 'request';
-	public $response = 'response';
-	public $session = 'session';
-
-    public function init()
-    {
-        parent::init();
-
-        $this->request = Instance::ensure($this->request, Request::class);
-        $this->response = Instance::ensure($this->response, Response::class);
-        $this->session = Instance::ensure($this->session, Session::class);
-    }
-
+	const EVENT_BEFORE_VIEW_SHOW = 'beforeViewShow';
+	const EVENT_AFTER_VIEW_SHOW = 'afterViewShow';
     /**
      * @inheritdoc
      */
@@ -64,6 +50,8 @@ class ViewController extends Controller implements ViewContextInterface
      */
     public function actionIndex($slug)
     {
+        $this->trigger(self::EVENT_BEFORE_VIEW_SHOW);
+
         $data['slug'] = $slug;
         $data['route'] = '/' . $this->getRoute();
 
@@ -73,26 +61,15 @@ class ViewController extends Controller implements ViewContextInterface
         $settings = Yii::$app->settings->getAll();
         $settings['videos'] = Module::getInstance()->settings->getAll();
 
-        if (!Visitor::isCrawler()) { // Оформить как евент
-            Video::updateAllCounters(['views' => 1], ['video_id' => $data['video']['video_id']]);
-
-	        $this->session->open();
-
-            if ($this->session->isActive) {
-                if (!empty($this->session['prev_location']) && $this->session['prev_location']['route'] === 'videos/category/index') {
-                    RotationStats::updateAllCounters(['current_clicks' => 1], ['image_id' => $data['video']['image']['image_id'], 'category_id' => $this->session['prev_location']['category_id']]);
-                    $this->session->remove('prev_location');
-                }
-            }
-
-			Event::on(self::class, self::EVENT_AFTER_ACTION, [VisitorEvent::class, 'onClick']);
-        }
-
         if ($data['video']['template'] !== '') {
         	$template = $data['video']['template'];
         } else {
         	$template = 'view';
         }
+
+        Event::on(self::class, self::EVENT_AFTER_VIEW_SHOW, [\ytubes\videos\events\UpdateCountersEvent::class, 'onClickVideo'], $data);
+
+        $this->trigger(self::EVENT_AFTER_VIEW_SHOW);
 
         return $this->render($template, [
             'data' => $data,

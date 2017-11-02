@@ -7,9 +7,6 @@ use yii\base\Event;
 use yii\base\ViewContextInterface;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\web\Request;
-use yii\web\Response;
-use yii\web\Session;
 
 use yii\data\Pagination;
 
@@ -29,18 +26,8 @@ use yii\filters\VerbFilter;
  */
 class CategoryController extends Controller implements ViewContextInterface
 {
-	public $request = 'request';
-	public $response = 'response';
-	public $session = 'session';
-
-    public function init()
-    {
-        parent::init();
-
-        $this->request = Instance::ensure($this->request, Request::class);
-        $this->response = Instance::ensure($this->response, Response::class);
-        $this->session = Instance::ensure($this->session, Session::class);
-    }
+	const EVENT_BEFORE_CATEGORY_SHOW = 'beforeCategoryShow';
+	const EVENT_AFTER_CATEGORY_SHOW = 'afterCategoryShow';
 
     /**
      * @inheritdoc
@@ -68,13 +55,14 @@ class CategoryController extends Controller implements ViewContextInterface
      */
     public function actionIndex($slug, $page = 1, $sort = '')
     {
+        $this->trigger(self::EVENT_BEFORE_CATEGORY_SHOW);
+
         $data['slug'] = $slug;
         $data['sort'] = $sort;
         $data['page'] = (int) $page;
         $data['route'] = '/' . $this->getRoute();
 
         	// Ищем категорию
-        //$categriesRepository = new CategoriesRepository();
         $data['category'] = CategoryFinder::findBySlug($slug);//$categriesRepository->findBySlug($slug);
 
 		if (empty($data['category'])) {
@@ -95,22 +83,9 @@ class CategoryController extends Controller implements ViewContextInterface
         $settings = Yii::$app->settings->getAll();
         $settings['videos'] = Module::getInstance()->settings->getAll();
 
-        if (!Visitor::isCrawler()) {
-            $image_ids = array_keys($data['videos']);
+        Event::on(self::class, self::EVENT_AFTER_CATEGORY_SHOW, [\ytubes\videos\events\UpdateCountersEvent::class, 'onShowThumbs'], $data);
 
-            RotationStats::updateAllCounters(['current_shows' => 1], ['image_id' => $image_ids, 'category_id' => $data['category']['category_id']]);
-
-	        $this->session->open();
-
-	        if ($this->session->isActive) {
-	            $this->session['prev_location'] = [
-	                'route' => $this->getRoute(),
-	                'category_id' => $data['category']['category_id'],
-	            ];
-	        }
-
-	        Event::on(self::class, self::EVENT_AFTER_ACTION, [VisitorEvent::class, 'onView']);
-        }
+        $this->trigger(self::EVENT_AFTER_CATEGORY_SHOW);
 
         return $this->render('category_videos', [
             'data' => $data,

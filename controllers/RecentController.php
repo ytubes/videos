@@ -4,8 +4,6 @@ namespace ytubes\videos\controllers;
 use Yii;
 use yii\di\Instance;
 use yii\web\Controller;
-use yii\web\Request;
-use yii\web\Response;
 use yii\data\Pagination;
 use yii\base\Event;
 use yii\base\ViewContextInterface;
@@ -20,16 +18,8 @@ use ytubes\events\VisitorEvent;
  */
 class RecentController extends Controller implements ViewContextInterface
 {
-    public $request = 'request';
-    public $response = 'response';
-
-    public function init()
-    {
-        parent::init();
-
-        $this->request = Instance::ensure($this->request, Request::class);
-        $this->response = Instance::ensure($this->response, Response::class);
-    }
+	const EVENT_BEFORE_RECENT_SHOW = 'beforeRecentShow';
+	const EVENT_AFTER_RECENT_SHOW = 'afterRecentShow';
 
     /**
      * @inheritdoc
@@ -58,6 +48,8 @@ class RecentController extends Controller implements ViewContextInterface
      */
     public function actionIndex($page = 1)
     {
+        $this->trigger(self::EVENT_BEFORE_RECENT_SHOW);
+
         $data['page'] = (int) $page;
         $data['route'] = '/' . $this->getRoute();
 
@@ -76,9 +68,7 @@ class RecentController extends Controller implements ViewContextInterface
         $settings = Yii::$app->settings->getAll();
         $settings['videos'] = Module::getInstance()->settings->getAll();
 
-        if (!Visitor::isCrawler()) {
-            Event::on(self::class, self::EVENT_AFTER_ACTION, [VisitorEvent::class, 'onView']);
-        }
+        $this->trigger(self::EVENT_AFTER_RECENT_SHOW);
 
         return $this->render('recent', [
             'data' => $data,

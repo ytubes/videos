@@ -100,6 +100,15 @@ class Category extends ActiveRecord
         ];
     }
     /**
+     * @return \yii\db\ActiveRecord
+     */
+    public static function findBySlug($slug)
+    {
+        return self::find()
+        	->where(['slug' => $slug])
+        	->one();
+    }
+    /**
      * @return \yii\db\ActiveQuery
      */
     public function getVideos()
