@@ -22,8 +22,8 @@ use ytubes\events\VisitorEvent;
  */
 class ViewController extends Controller implements ViewContextInterface
 {
-	const EVENT_BEFORE_VIEW_SHOW = 'beforeViewShow';
-	const EVENT_AFTER_VIEW_SHOW = 'afterViewShow';
+    const EVENT_BEFORE_VIEW_SHOW = 'beforeViewShow';
+    const EVENT_AFTER_VIEW_SHOW = 'afterViewShow';
     /**
      * @inheritdoc
      */
@@ -31,18 +31,18 @@ class ViewController extends Controller implements ViewContextInterface
     {
         return [
             'queryParams' => [
-            	'class' => QueryParamsFilter::class,
-            	'actions' => [
-            		'index' => ['slug'],
-            	],
+                'class' => QueryParamsFilter::class,
+                'actions' => [
+                    'index' => ['slug'],
+                ],
             ],
         ];
     }
 
-	public function getViewPath()
-	{
-	    return Yii::getAlias('@frontend/views/videos');
-	}
+    public function getViewPath()
+    {
+        return Yii::getAlias('@frontend/views/videos');
+    }
     /**
      * Displays a single Videos model.
      * @param integer $id
@@ -58,13 +58,17 @@ class ViewController extends Controller implements ViewContextInterface
         $videoFinder = new VideoFinder();
         $data['video'] = $videoFinder->findBySlug($slug);
 
+        if (empty($data['video'])) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+
         $settings = Yii::$app->settings->getAll();
         $settings['videos'] = Module::getInstance()->settings->getAll();
 
         if ($data['video']['template'] !== '') {
-        	$template = $data['video']['template'];
+            $template = $data['video']['template'];
         } else {
-        	$template = 'view';
+            $template = 'view';
         }
 
         Event::on(self::class, self::EVENT_AFTER_VIEW_SHOW, [\ytubes\videos\events\UpdateCountersEvent::class, 'onClickVideo'], $data);
