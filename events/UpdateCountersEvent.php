@@ -16,11 +16,11 @@ class UpdateCountersEvent
         $crawlerDetect = Yii::$container->get('crawler.detect');
 
         if ($crawlerDetect->isCrawler()) {
-        	return;
+            return;
         }
 
         if (empty($event->data['videos'])) {
-        	return;
+            return;
         }
 
         $image_ids = array_keys($event->data['videos']);
@@ -42,7 +42,7 @@ class UpdateCountersEvent
         $crawlerDetect = Yii::$container->get('crawler.detect');
 
         if ($crawlerDetect->isCrawler()) {
-        	return;
+            return;
         }
 
         // Аадейт счетчика просмотров видео
@@ -53,17 +53,18 @@ class UpdateCountersEvent
 
         // Анализируем рефер
         $request = new Request([
-        	'pathInfo' => parse_url(Yii::$app->request->getReferrer(), PHP_URL_PATH),
+            'baseUrl' => Yii::$app->urlManager->baseUrl,
+            'url' => parse_url(Yii::$app->request->getReferrer(), PHP_URL_PATH),
         ]);
 
-		$route = Yii::$app->urlManager->parseRequest($request);
+        $route = Yii::$app->urlManager->parseRequest($request);
 
         // Определим, был ли клик со страницы категории.
         if ($route[0] === 'videos/category/index' && isset($route[1]['slug'])) {
             $category = Category::findBySlug($route[1]['slug']);
 
             if ($category instanceof Category) {
-            	RotationStats::updateAllCounters(['current_clicks' => 1], ['category_id' => $category->category_id, 'video_id' => $video_id, 'image_id' => $image_id]);
+                RotationStats::updateAllCounters(['current_clicks' => 1], ['category_id' => $category->category_id, 'video_id' => $video_id, 'image_id' => $image_id]);
             }
         }
 
